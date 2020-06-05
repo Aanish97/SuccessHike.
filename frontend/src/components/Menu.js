@@ -18,9 +18,7 @@ class Menu extends Component {
         events:[], 
         type_menu:'',
         search:'',
-        select_type_b:'all',
-        select_type_j:'all',
-        select_type_e:'all',
+        category_selector:'all categories'
         }
         
     }
@@ -58,11 +56,10 @@ class Menu extends Component {
     changehandler=(e)=>{    //this is the onchange listener of the form, gets the id and value from the Formcontrol and updates the state constantly
         this.setState({[e.target.id]:e.target.value})
     }
-
     items(count)
     {
         if(this.state.type_menu=='Events')
-        {
+        {   
             return(
                 count < this.state.events.length && this.state.events[count].event_name.includes(this.state.search)?
                 <Link to={{ pathname: '/EventsDetails', state: {event:this.state.events[count]} }}>
@@ -70,11 +67,11 @@ class Menu extends Component {
                         <div id='boldDetails' style={{color: 'black' }}>{(this.state.events[count].event_date.substring(0,10)).replace(/(\r\n|-|\r)/gm,"/")}</div>
                         <img style={{height:'75%', width:'240px'}} class="hoverable" id='gridItemImgSize' src={this.url_event(count)}></img>
                         <p style={{ color: 'black' }}>{this.state.events[count].event_name}</p>
-                    </Col>
+                    </Col> 
                 </Link>
                 :
                 <div/>
-            )
+            )     
         }
         else if(this.state.type_menu=='Small Businesses')
         {
@@ -149,7 +146,7 @@ class Menu extends Component {
     handleSelect = (evtKey, evt) => {
         // Get the selectedIndex in the evtKey variable
         this.setState({
-            select_type:evtKey
+            category_selector:evtKey
         })
     }
 
@@ -194,11 +191,47 @@ class Menu extends Component {
 
                 <Container id='gridItemsFont'>
                     <Row>
-                        <Col>
-                            <h2 style={{margin:'4% 1% 4% 0%'}}>{this.state.type_menu}</h2>
+                        <Col xs={6} md={4}>
+                            <h2 style={{margin:'6% 1% 4% 0%'}}>{this.state.type_menu}</h2>
                         </Col>
                         
-                        <Col md={{ span: 3, offset: 3 }} style={{marginTop:'2%'}}>
+                        
+                        
+                        
+                        <Col xs={6} md={6} style={{marginTop:'2%'}}>
+                            <DropdownButton onSelect={this.handleSelect} title={this.state.category_selector} id="input-group-dropdown-2" variant='danger'>
+                                
+                            {
+                                this.state.categories.map((data)=>{
+                                    if(data.category_type=='Events' && this.state.type_menu == 'Events') {
+                                        return(
+                                            <Dropdown.Item eventKey={data.category_name}>{data.category_name}</Dropdown.Item>
+                                        )
+                                    }
+                                })
+                            }
+                            {
+                                this.state.categories.map((data)=>{
+                                    if(data.category_type=='Businesses' && this.state.type_menu == 'Small Businesses') {
+                                        return(
+                                            <Dropdown.Item eventKey={data.category_name}>{data.category_name}</Dropdown.Item>
+                                        )
+                                    }
+                                })
+                            }
+                            {
+                                this.state.categories.map((data)=>{
+                                    if(data.category_type=='Jobs' && this.state.type_menu=='Oppurtunities') {
+                                        return(
+                                            <Dropdown.Item eventKey={data.category_name}>{data.category_name}</Dropdown.Item>
+                                        )
+                                    }
+                                })
+                            }
+                                
+                            </DropdownButton>
+                        </Col>
+                        <Col xs={6} md={2} style={{marginTop:'2%'}}>
                             <Form id='form' inline>
                                 <FormControl type="text" placeholder="Search" size='md' onChange={this.changehandler} id='search' value={this.state.search}/>
                             </Form>
@@ -206,8 +239,9 @@ class Menu extends Component {
                     </Row>
 
                     &nbsp;&nbsp;
+
                     {
-                        [0,0,0,0,0,0,0,0].map((x)=>{
+                        [0].map((x)=>{
                             return(
                                 <Row class='h-100 d-inline-block'>
                                     {
@@ -217,14 +251,20 @@ class Menu extends Component {
                                                 <div>
                                                     {this.items(count)}
                                                 </div>
-                                            )                                        
+                                            )
                                         })
                                     }
                                 </Row>
                             )
                         })
                     }
+
+
                 </Container>
+                <div style={{textAlign:"center", color:"blue"}}>
+                    <div> &#60;&#60; Previous Page</div><nobr/>
+                    <div>Next Page >></div>
+                </div>
                 <Footer/>
             </div>
         )
